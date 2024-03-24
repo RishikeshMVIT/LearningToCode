@@ -22,9 +22,11 @@
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Hittable.h" />
     <ClInclude Include="Include\Color.h" />
     <ClInclude Include="Include\Ray.h" />
     <ClInclude Include="Include\Vector3.h" />
+    <ClInclude Include="SphereSDF.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
