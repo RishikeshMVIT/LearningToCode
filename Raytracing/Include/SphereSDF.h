@@ -6,7 +6,8 @@
 class SphereSDF : public Hittable
 {
 public:
-	SphereSDF(Point3 center, double radius) : m_center(center), m_radius(radius) {}
+	SphereSDF(Point3 center, double radius, shared_ptr<Material> material) 
+		: m_center(center), m_radius(radius), m_material(material) {}
 
 	bool Hit(const Ray& ray, Interval interval, HitRecord& record) const override
 	{
@@ -32,11 +33,13 @@ public:
 		record.hitPoint = ray.At(record.interval);
 		Vector3 outwardNormal = (record.hitPoint - m_center) / m_radius;
 		record.SetFaceNormal(ray, outwardNormal);
+		record.material = m_material;
 
 		return true;
 	}
 
 private:
+	shared_ptr<Material> m_material;
 	Point3 m_center;
 	double m_radius;
 };

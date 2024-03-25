@@ -5,6 +5,7 @@
 #include "MathUtils.h"
 #include "Color.h"
 #include "Hittable.h"
+#include "Material.h"
 
 class Camera
 {
@@ -40,22 +41,33 @@ private:
 		imageHeight = static_cast<int>(imageWidth / aspectRatio);
 		imageHeight = (imageHeight < 1) ? 1 : imageHeight;
 
-		center = Point3(0, 0, 0);
+		center = lookFrom;
 
-		auto focalLength = 1.0;
-		auto viewportHeight = 2.0;
+		// Viewport Dimensions
+		auto theta = DegreesToRadians(vFOV);
+		auto h = tan(theta / 2);
+		auto viewportHeight = 2.0 * h * focusDistance;
 		auto viewportWidth = viewportHeight * (static_cast<double>(imageWidth) / imageHeight);
+
+		// Camera Basis Vectors
+		w = UnitVector(lookFrom - lookAt);
+		u = UnitVector(Cross(upVector, w));
+		v = Cross(w, u);
 		
 		// Horizontal and Vertical Viewport Vectors
-		auto viewportU = Vector3(viewportWidth, 0, 0);
-		auto viewportV = Vector3(0, -viewportHeight, 0);
+		auto viewportU = viewportWidth * u;
+		auto viewportV = viewportHeight * -v;
 
 		// Pixel Delta
 		pixelDeltaU = viewportU / imageWidth;
 		pixelDeltaV = viewportV / imageHeight;
 
-		auto viewportUpperLeft = center - Vector3(0, 0, focalLength) - viewportU / 2 - viewportV / 2;
+		auto viewportUpperLeft = center - (focusDistance * w) - viewportU / 2 - viewportV / 2;
 		pixel00Location = viewportUpperLeft + 0.5 * (pixelDeltaU + pixelDeltaV);
+
+		auto defocusRadius = focusDistance * tan(DegreesToRadians(defocusAngle / 2));
+		defocusDiskU = u * defocusRadius;
+		defocusDiskV = v * defocusRadius;
 	}
 
 	Vector3 pixelSampleSquare()
@@ -76,23 +88,33 @@ private:
 		auto pixelCenter = pixel00Location + (i * pixelDeltaU) + (j * pixelDeltaV);
 		auto pixelSample = pixelCenter + pixelSampleSquare();
 
-		auto rayOrigin = center;
+		auto rayOrigin = (defocusAngle <= 0) ? center : DefocusDiskSample();
 		auto rayDirection = pixelSample - rayOrigin;
 
 		return Ray(rayOrigin, rayDirection);
+	}
+
+	Point3 DefocusDiskSample() const
+	{
+		auto p = RandomVectorInUnitDisk();
+		return center + (p[0] * defocusDiskU) + (p[1] * defocusDiskV);
 	}
 
 	Color RayColor(const Ray& ray, const Hittable& world, int depth) const
 	{
 		HitRecord record;
 
+		// exceeded ray bounce limit, no more light can be accumulated
 		if (depth <= 0)
 			return Color(0, 0, 0);
 
 		if (world.Hit(ray, Interval(0.001, UINFINITY), record))
 		{
-			Vector3 direction = RandomVectorOnHemisphere(record.normal);
-			return 0.5 * RayColor(Ray(record.hitPoint, direction), world, depth - 1);
+			Ray scattered;
+			Color attenuation;
+			if (record.material->Scatter(ray, record, attenuation, scattered))
+				return attenuation * RayColor(scattered, world, depth - 1);
+			return Color(0, 0, 0);
 		}
 
 		Vector3 unitDirection = UnitVector(ray.Direction());
@@ -101,15 +123,22 @@ private:
 	}
 
 public:
-	double aspectRatio = 1.0;
-	int imageWidth = 100;
-	int samplesPerPixel = 10;
-	int maxDepth = 10;
+	double aspectRatio = 1.0;	// Ratio of image width over height
+	int imageWidth = 100;		// Rendered image width in pixels
+	int samplesPerPixel = 10;	// Number of random samples per pixel
+	int maxDepth = 10;			// Max number of ray bounces
+	double vFOV = 90;			// Vertica; Field of View
+	Point3 lookFrom = Point3(0, 0, -1);
+	Point3 lookAt = Point3(0, 0, 0);
+	Vector3 upVector = Vector3(0, 1, 0);
+	double defocusAngle = 0;
+	double focusDistance = 10;
 
 private:
 	int imageHeight;
 	Point3 center;
 	Point3 pixel00Location;
-	Vector3 pixelDeltaU;
-	Vector3 pixelDeltaV;
+	Vector3 pixelDeltaU, pixelDeltaV;
+	Vector3 u, v, w;			// Camera Basis Vectors
+	Vector3 defocusDiskU, defocusDiskV;
 };

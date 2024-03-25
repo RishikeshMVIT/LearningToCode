@@ -1,7 +1,10 @@
 #pragma once
 
+#include "MathUtils.h"
 #include "Vector3.h"
 #include "Ray.h"
+
+class Material;
 
 class HitRecord
 {
@@ -17,6 +20,7 @@ public:
 	Vector3 normal;
 	double  interval;
 	bool    isFrontFace;
+	shared_ptr<Material> material;
 };
 
 class Hittable

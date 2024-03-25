@@ -7,6 +7,8 @@
 // Alias for representing colors
 using Color = Vector3;
 
+inline double LinearToGamma(double linearComponent) { return sqrt(linearComponent); }
+
 void WriteColor(std::ostream& out, Color pixelColor, int samplesPerPixel)
 {
 	auto r = pixelColor.x();
@@ -17,6 +19,11 @@ void WriteColor(std::ostream& out, Color pixelColor, int samplesPerPixel)
 	r *= scale;
 	g *= scale;
 	b *= scale;
+
+	// Linear to Gamma Transform
+	r = LinearToGamma(r);
+	g = LinearToGamma(g);
+	b = LinearToGamma(b);
 	
 	static const Interval intensity(0.000, 0.999);
 

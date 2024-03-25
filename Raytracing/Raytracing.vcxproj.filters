@@ -35,7 +35,7 @@
     <ClInclude Include="Include\SphereSDF.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Include\HIttableList.h">
+    <ClInclude Include="Include\HittableList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\MathUtils.h">
@@ -45,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Include\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\Material.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

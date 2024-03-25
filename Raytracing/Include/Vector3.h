@@ -41,6 +41,11 @@ public:
 
 	static Vector3 Random()						  { return Vector3(RandomDouble(), RandomDouble(), RandomDouble()); }
 	static Vector3 Random(double min, double max) { return Vector3(RandomDouble(min, max), RandomDouble(min, max), RandomDouble(min, max)); }
+	bool NearZero() const
+	{
+		auto s = 1e-8;
+		return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+	}
 };
 
 // Alias for points in space
@@ -71,6 +76,15 @@ inline Vector3 Cross(const Vector3& a, const Vector3& b)
 }
 
 inline Vector3 UnitVector(Vector3 a) { return a / a.Length(); }
+inline Vector3 RandomVectorInUnitDisk()
+{
+	while (true)
+	{
+		auto p = Vector3(RandomDouble(-1, 1), RandomDouble(-1, 1), 0);
+		if (p.Length2() < 1)
+			return p;
+	}
+}
 inline Vector3 RandomVectorInUnitSphere()
 {
 	while (true)
@@ -90,6 +104,16 @@ inline Vector3 RandomVectorOnHemisphere(const Vector3& normal)
 		return -onUnitSphere;
 }
 
+// Reflect a vector about another
+Vector3 Reflect(const Vector3& a, const Vector3& b) { return a - (2 * Dot(a, b) * b); }
+//Refraction of a vector about a normal
+Vector3 Refract(const Vector3& a, const Vector3& b, double iorRatio)
+{
+	auto cosine = fmin(Dot(-a, b), 1.0);
+	Vector3 refractedRayPerpendicular = iorRatio * (a + cosine * b);
+	Vector3 refractedRayParallel = -sqrt(fabs(1.0 - refractedRayPerpendicular.Length2())) * b;
+	return refractedRayParallel + refractedRayPerpendicular;
+}
 //TODO: Analytical Methods to manipulate a random vector so that the results are on the surface of a hemisphere
 //		Currently using Rejection Method - repeatedly generating until a sample which meets the desired criteria
 //		>> Generate Vector inside unit sphere > Normaize > Invert if it falls on wrong hemisphere;
