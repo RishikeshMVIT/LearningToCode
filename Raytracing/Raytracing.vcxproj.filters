@@ -29,10 +29,16 @@
     <ClInclude Include="Include\Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Hittable.h">
+    <ClInclude Include="Include\Hittable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SphereSDF.h">
+    <ClInclude Include="Include\SphereSDF.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\HIttableList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Include\MathUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

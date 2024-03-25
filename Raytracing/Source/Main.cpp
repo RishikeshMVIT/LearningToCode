@@ -2,32 +2,32 @@
 
 #include <iostream>
 
-#include "Vector3.h"
+#include "MathUtils.h"
 #include "Color.h"
-#include "Ray.h"
+#include "Hittable.h"
+#include "HIttableList.h"
+#include "SphereSDF.h"
 
-float HitSphere(const Point3& center, float radius, const Ray& ray)
-{
-	Vector3 oc = ray.Origin() - center;
-	auto a = ray.Direction().Length2();
-	auto h = Dot(oc, ray.Direction());
-	auto c = oc.Length2() - (radius * radius);
-	auto discriminant = (h * h) - (a * c);
-	
-	if (discriminant < 0)
-		return -1.0;
-	else
-		return ((-h - sqrt(discriminant)) / a);
-}
+//double HitSphere(const Point3& center, double radius, const Ray& ray)
+//{
+//	Vector3 oc = ray.Origin() - center;
+//	auto a = ray.Direction().Length2();
+//	auto h = Dot(oc, ray.Direction());
+//	auto c = oc.Length2() - (radius * radius);
+//	auto discriminant = (h * h) - (a * c);
+//	
+//	if (discriminant < 0)
+//		return -1.0;
+//	else
+//		return ((-h - sqrt(discriminant)) / a);
+//}
 
-Color RayColor(const Ray& ray)
+Color RayColor(const Ray& ray, const Hittable& world)
 {
-	auto t = HitSphere(Point3(0, 0, -1), 0.5, ray);
-	if (t > 0.0)
-	{
-		Vector3 normal = UnitVector(ray.At(t) - Vector3(0, 0, -1));
-		return 0.5 * Color(normal.x() + 1, normal.y() + 1, normal.z() + 1);
-	}
+	HitRecord record;
+
+	if (world.Hit(ray, 0, Utils_INFINITY, record))
+		return 0.5 * (record.normal + Color(1, 1, 1));
 
 	Vector3 unitDirection = UnitVector(ray.Direction());
 	auto a = 0.5 * (unitDirection.y() + 1.0);
@@ -44,10 +44,15 @@ int main()
 	int imageHeight = static_cast<int>(imageWidth / aspectRatio);
 	imageHeight = (imageHeight < 1) ? 1 : imageHeight;
 
+	// World
+	HittableList world;
+	world.Add(make_shared<SphereSDF>(Point3(0, 0, -1), 0.5));
+	world.Add(make_shared<SphereSDF>(Point3(0, -100.5, -1), 100));
+
 	// Camera
 	auto focalLength = 1.0;
 	auto viewportHeight = 2.0;
-	auto viewportWidth = viewportHeight * (static_cast<float>(imageWidth) / imageHeight);
+	auto viewportWidth = viewportHeight * (static_cast<double>(imageWidth) / imageHeight);
 	auto cameraCenter = Point3(0, 0, 0);
 
 	// Horizontal and Vertical Viewport Vectors
@@ -72,9 +77,9 @@ int main()
 			auto pixelCenter = pixel00Location + (i * pixelDeltaU) + (j * pixelDeltaV);
 			auto rayDirection = pixelCenter - cameraCenter;
 
-			Ray r(cameraCenter, rayDirection);
+			Ray ray(cameraCenter, rayDirection);
 
-			Color pixelColor = RayColor(r);
+			Color pixelColor = RayColor(ray, world);
 
 			WriteColor(std::cout, pixelColor);
 		}

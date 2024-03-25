@@ -11,7 +11,7 @@ public:
 	Point3 Origin() const { return m_origin; }
 	Vector3 Direction() const { return m_direction; }
 
-	Point3 At(float translation) const
+	Point3 At(double translation) const
 	{
 		return m_origin + (translation * m_direction);
 	}
