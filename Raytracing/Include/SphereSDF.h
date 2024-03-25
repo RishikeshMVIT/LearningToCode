@@ -8,7 +8,7 @@ class SphereSDF : public Hittable
 public:
 	SphereSDF(Point3 center, double radius) : m_center(center), m_radius(radius) {}
 
-	bool Hit(const Ray& ray, double tMin, double tMax, HitRecord& record) const override
+	bool Hit(const Ray& ray, Interval interval, HitRecord& record) const override
 	{
 		Vector3 oc = ray.Origin() - m_center;
 		auto a = ray.Direction().Length2();
@@ -21,13 +21,11 @@ public:
 		auto sqrtDisc = sqrt(discriminant);
 
 		auto root = (-h - sqrtDisc) / a;
-		if (root <= tMin || tMax <= root)
+		if (!interval.Surrounds(root))
 		{
 			root = (-h + sqrtDisc) / a;
-			if (root <= tMin || tMax <= root)
-			{
+			if (!interval.Surrounds(root))
 				return false;
-			}
 		}
 
 		record.interval = root;

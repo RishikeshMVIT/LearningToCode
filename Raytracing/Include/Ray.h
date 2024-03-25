@@ -17,6 +17,6 @@ public:
 	}
 
 private:
-	Point3 m_origin;
+	Point3  m_origin;
 	Vector3 m_direction;
 };

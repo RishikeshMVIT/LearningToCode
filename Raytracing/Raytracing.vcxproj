@@ -22,9 +22,11 @@
     <ClCompile Include="Source\Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Include\Camera.h" />
     <ClInclude Include="Include\Hittable.h" />
     <ClInclude Include="Include\Color.h" />
     <ClInclude Include="Include\HIttableList.h" />
+    <ClInclude Include="Include\Interval.h" />
     <ClInclude Include="Include\MathUtils.h" />
     <ClInclude Include="Include\Ray.h" />
     <ClInclude Include="Include\Vector3.h" />
