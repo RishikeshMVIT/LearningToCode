@@ -128,7 +128,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Include\CoreWindow.h" />
-    <ClInclude Include="Include\DynamicArray.h" />
     <ClInclude Include="Include\WindowManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
