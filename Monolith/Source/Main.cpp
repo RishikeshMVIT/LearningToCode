@@ -86,7 +86,29 @@ private:
 	size_t size;
 };
 
+template <typename T>
+class LinkedList
+{
 
+};
+
+template <typename T>
+class Tree
+{
+
+};
+
+template <typename T>
+class Trie
+{
+
+};
+
+template <typename T>
+class Graph
+{
+
+};
 
 int main()
 {
